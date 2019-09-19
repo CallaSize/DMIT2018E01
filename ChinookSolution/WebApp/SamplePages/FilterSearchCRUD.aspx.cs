@@ -76,9 +76,54 @@ namespace WebApp.SamplePages
 
         }
 
-        private void ClearControls()
+        protected void ClearControls()
         {
-            
+            EditAlbumID.Text = "";
+            EditTitle.Text = "";
+            EditReleaseYear.Text = "";
+            EditReleaseLabel.Text = "";
+            EditAlbumArtistList.SelectedIndex = 0;
+        }
+
+        protected void Add_Click(object sender, EventArgs e)
+        {
+            if (Page.IsValid)
+            {
+                string albumtitle = EditTitle.Text;
+                int albumyear = int.Parse(EditReleaseYear.Text);
+                string albumlabel = EditReleaseLabel.Text == "" ? 
+                    null : EditReleaseLabel.Text;
+                int albumartist = int.Parse(EditAlbumArtistList.SelectedValue);
+
+                //now put them inside an instance.
+                Album theAlbum = new Album();
+                theAlbum.Title = albumtitle;
+                theAlbum.ArtistId = albumartist;
+                theAlbum.ReleaseYear = albumyear;
+                theAlbum.ReleaseLabel = albumlabel;
+
+                MessageUserControl.TryRun(() => 
+                {
+                    AlbumController sysmgr = new AlbumController();
+                    int albumid = sysmgr.Album_Add(theAlbum);
+                    EditAlbumID.Text = albumid.ToString();
+                    if (AlbumList.Rows.Count > 0)
+                    {
+                        AlbumList.DataBind(); // reexecute the ODS for my albumlist.
+                    }
+                }, "Successful","Album Added");
+
+            }
+        }
+
+        protected void Update_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        protected void Remove_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
