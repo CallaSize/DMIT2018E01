@@ -9,7 +9,7 @@
 
 void Main()
 {
-	string artistname = "Deep Purple"
+	string artistname = "AC/DC";
 	var results = 	from x in Albums
 				 where x.Artist.Name.Contains(artistname)
 				 orderby x.ReleaseYear, x.Title

@@ -55,13 +55,13 @@ namespace ChinookSystem.BLL
             
         }
         [DataObjectMethod(DataObjectMethodType.Select, false)]
-        public List<AlbumsOfArtist> Album_AlbumsOfArtist()
+        public List<AlbumsOfArtist> Album_AlbumsOfArtist(string artistname)
         {
             using (var context = new ChinookContext())
             {
                 //unlike Linqpad which is Linq to SQL, within our application, it is Linq to Entities.
                 var results = from x in context.Albums
-                              where x.Artist.Name.Contains("Deep Purple")
+                              where x.Artist.Name.Contains(artistname)
                               orderby x.ReleaseYear, x.Title
                               select new AlbumsOfArtist
                               {
