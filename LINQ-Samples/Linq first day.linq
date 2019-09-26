@@ -46,3 +46,57 @@ Albums
 	.OrderBy(x => x.Title)
 	.Select (x => x)
 	
+	
+//create a list of albums release between 2007 amd 2018 
+//order by release year then by title
+from x in Albums
+where x.ReleaseYear >= 2007
+&& x.ReleaseYear <=2018
+orderby x.ReleaseYear, x.Title
+select x
+
+Albums
+   .Where (x => ((x.ReleaseYear >= 2007) && (x.ReleaseYear <= 2018)))
+   .OrderBy (x => x.ReleaseYear)
+   .ThenBy (x => x.Title)
+   
+   
+   
+from x in Albums
+where x.ReleaseYear >= 2007
+&& x.ReleaseYear <=2018
+orderby x.ReleaseYear descending, x.Title
+select x
+
+//note the difference in method names usingn the method syntax
+// a descending orderby is .OrderByDescending
+// secondary and beyond ordering is .ThenBy
+Albums
+   .Where (x => ((x.ReleaseYear >= 2007) && (x.ReleaseYear <= 2018)))
+   .OrderByDescending (x => x.ReleaseYear)
+   .ThenBy (x => x.Title)
+   
+   
+ //can navigational properties be used in queries. 
+ //create a list of albums by Deep Purple
+ //order by release year and title.
+ //query syntax version:
+ from x in Albums
+ where x.Artist.Name.Contains("Deep Purple")
+ orderby x.ReleaseYear, x.Title
+ select x
+ 
+ //use the navigational properties to obtain the artist data
+ //new{...} creates a new dataset like when we create an instance of an object. (class definition) dynamically creating a new class
+ //lets try to find the artist name and limit the resulting columns.
+  from x in Albums
+ where x.Artist.Name.Contains("Deep Purple")
+ orderby x.ReleaseYear, x.Title
+ select new
+ {
+ 	Title = x.Title, 
+	ArtistName = x.Artist.Name,
+	RYear = x.ReleaseYear,
+	Label = x.ReleaseLabel
+	
+ }
