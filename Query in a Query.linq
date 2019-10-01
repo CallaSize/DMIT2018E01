@@ -20,3 +20,27 @@ select new {
 			length = y.Milliseconds		
 		}
 }
+
+//nested query. What you need is some header/top/category/information
+//to go along with it you need from each record, some details for the above info
+//report on employees and their expenses for the years (employee name, contact number, total number fo expenses, then underneath a list of individual expenses..
+//this is where ht repeater comes in
+
+//aggregates are executed against a collection of records. (eg. class.roster.count)
+//aggregate demonstration: how many tracks there are on an albums
+//.Count() .Sum() .Min() .Max() .Average() <--everything but count needs an x => x.field in it!
+
+from x in Albums
+where x.Tracks.Count()>0
+select new {
+	albumtitle = x.Title,
+	trackcount = x.Tracks.Count(),
+	playtime = x.Tracks.Sum(z => z.Milliseconds),
+	artistname = x.Artist.Name,
+	tracks = from y in x.Tracks
+		select new {
+			sname = y.Name,
+			genre = y.Genre.Name,
+			length = y.Milliseconds		
+		}
+}
