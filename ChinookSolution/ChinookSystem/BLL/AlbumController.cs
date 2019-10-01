@@ -10,6 +10,7 @@ using ChinookSystem.Data.Entities;
 using System.ComponentModel;
 using DMIT2018Common.UserControls;
 using ChinookSystem.Data.POCOs;
+using ChinookSystem.Data.DTOs;
 #endregion
 
 namespace ChinookSystem.BLL
@@ -74,6 +75,32 @@ namespace ChinookSystem.BLL
             }
         }
 
+
+        [DataObjectMethod(DataObjectMethodType.Select, false)]
+        public List<AlbumDTO> Album_AlbumandTracks()
+        {
+            using (var context = new ChinookContext())
+            {
+                var results = from x in context.Albums
+                              where x.Tracks.Count() > 25
+                              select new AlbumDTO
+                              {
+                                  AlbumTitle = x.Title,
+                                  TrackCount = x.Tracks.Count(),
+                                  PlayTime = x.Tracks.Sum(z => z.Milliseconds),
+                                  AlbumArtist = x.Artist.Name,
+                                  AlbumTracks = (from y in x.Tracks
+                                                 select new TrackPOCO
+                                                 {
+                                                     SongName = y.Name,
+                                                     SongGenre = y.Genre.Name,
+                                                     SongLength = y.Milliseconds
+                                                 }).ToList()
+                              };
+                return results.ToList();
+            }
+            
+        }
 
         #endregion
 
