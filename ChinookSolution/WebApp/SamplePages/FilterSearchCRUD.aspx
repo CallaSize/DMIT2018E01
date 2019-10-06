@@ -93,7 +93,8 @@
         <asp:LinkButton ID="Remove" runat="server" CausesValidation="false" OnClick="Remove_Click" OnClientClick="remove confirm ('Are you sure you wish to remove this album from the collection?')">Remove</asp:LinkButton>
     </div>
 
-    <asp:ObjectDataSource ID="AlbumListODS" runat="server" 
+    <asp:ObjectDataSource 
+        ID="AlbumListODS" runat="server" 
         OldValuesParameterFormatString="original_{0}" 
         SelectMethod="Album_GetByArtist" 
         TypeName="ChinookSystem.BLL.AlbumController"
