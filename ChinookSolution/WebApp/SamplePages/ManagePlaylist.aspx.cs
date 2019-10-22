@@ -5,7 +5,7 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
-#region Additonal Namespaces
+#region Additional Namespaces
 using ChinookSystem.BLL;
 using ChinookSystem.Data.POCOs;
 //using WebApp.Security;
@@ -27,29 +27,74 @@ namespace WebApp.SamplePages
 
         protected void ArtistFetch_Click(object sender, EventArgs e)
         {
-            
-                //code to go here
+
+            //first thing we probably want to do is validation, if we don't have that already on the form.
+            if (string.IsNullOrEmpty(ArtistName.Text))
+            {
+                //using MessageUserControl to display a message
+                MessageUserControl.ShowInfo("You done f*cked up", "Enter a partial artist name.");
+            }
+            else
+            {
+                //do a lookup by the artist name and bind our code.
+                MessageUserControl.TryRun(() =>
+                {
+                    SearchArg.Text = ArtistName.Text;
+                    TracksBy.Text = "Artist";
+                    TracksSelectionList.DataBind(); //this line causes the ODS to execute. So if I need to do it again, then I can just do a data bind.
+                },"Track Search", "Select from the following list to add to your playlist.");
+            }
 
           }
 
         protected void MediaTypeFetch_Click(object sender, EventArgs e)
         {
 
-                //code to go here
+            //we don't need to test to see if ther eis something that is needed becaus eit is a drop down list. 
+            //if you put a prompt line, you would have to check for it, but he didn't add one so no check is necessary
+            MessageUserControl.TryRun(() =>
+            {
+                SearchArg.Text = MediaTypeDDL.SelectedValue;
+                TracksBy.Text = "MediaType";
+                TracksSelectionList.DataBind(); //this line causes the ODS to execute. So if I need to do it again, then I can just do a data bind.
+            }, "Track Search", "Select from the following list to add to your playlist.");
+
 
         }
 
         protected void GenreFetch_Click(object sender, EventArgs e)
         {
 
-                //code to go here
+            //we don't need to test to see if ther eis something that is needed becaus eit is a drop down list. 
+            //if you put a prompt line, you would have to check for it, but he didn't add one so no check is necessary
+            MessageUserControl.TryRun(() =>
+            {
+                SearchArg.Text = GenreDDL.SelectedValue;
+                TracksBy.Text = "Genre";
+                TracksSelectionList.DataBind(); //this line causes the ODS to execute. So if I need to do it again, then I can just do a data bind.
+            }, "Track Search", "Select from the following list to add to your playlist.");
 
         }
 
         protected void AlbumFetch_Click(object sender, EventArgs e)
         {
 
-                //code to go here
+            //first thing we probably want to do is validation, if we don't have that already on the form.
+            if (string.IsNullOrEmpty(AlbumTitle.Text))
+            {
+                //using MessageUserControl to display a message
+                MessageUserControl.ShowInfo("Missing Data", "Enter a partial album name.");
+            }
+            else
+            {
+                //do a lookup by the album name and bind our code.
+                MessageUserControl.TryRun(() =>
+                {
+                    SearchArg.Text = AlbumTitle.Text;
+                    TracksBy.Text = "Album";
+                    TracksSelectionList.DataBind(); //this line causes the ODS to execute. So if I need to do it again, then I can just do a data bind.
+                }, "Track Search", "Select from the following list to add to your playlist.");
+            }
 
         }
 

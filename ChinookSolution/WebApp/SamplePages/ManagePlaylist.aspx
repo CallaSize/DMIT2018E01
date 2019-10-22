@@ -1,4 +1,4 @@
-﻿<%@ Page Title="OLTP Playlist" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="ManagePlaylist.aspx.cs" Inherits="Jan2018DemoWebsite.SamplePages.ManagePlaylist" %>
+﻿<%@ Page Title="OLTP Playlist" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="ManagePlaylist.aspx.cs" Inherits="WebApp.SamplePages.ManagePlaylist" %>
 
 <%@ Register Src="~/UserControls/MessageUserControl.ascx" TagPrefix="uc1" TagName="MessageUserControl" %>
 

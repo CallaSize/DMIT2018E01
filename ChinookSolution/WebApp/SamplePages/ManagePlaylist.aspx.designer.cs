@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Jan2018DemoWebsite.SamplePages {
+namespace WebApp.SamplePages {
     
     
     public partial class ManagePlaylist {
