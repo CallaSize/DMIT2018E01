@@ -7,11 +7,11 @@ using System.Web.UI.WebControls;
 
 #region Additonal Namespaces
 using ChinookSystem.BLL;
-using Chinook.Data.POCOs;
-using WebApp.Security;
+using ChinookSystem.Data.POCOs;
+//using WebApp.Security;
 #endregion
 
-namespace Jan2018DemoWebsite.SamplePages
+namespace WebApp.SamplePages
 {
     public partial class ManagePlaylist : System.Web.UI.Page
     {
