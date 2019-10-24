@@ -100,7 +100,27 @@ namespace WebApp.SamplePages
 
         protected void PlayListFetch_Click(object sender, EventArgs e)
         {
-            //code to go here
+            //verify if the data is there
+            if (string.IsNullOrEmpty(PlaylistName.Text))
+            {
+                MessageUserControl.ShowInfo("Required Data", "Play list name is required.");
+            }
+            else
+            {
+                //call BLL
+                string playlistname = PlaylistName.Text;
+                //until we do security, we will use a hard coded username
+                string username = "HansenB";
+                //do a standard query lookup to your controller, use MessageUserControl for error handling
+                MessageUserControl.TryRun(() =>
+                {
+                    PlaylistTracksController sysmgr = new PlaylistTracksController();
+                    List<UserPlaylistTrack> datainfo = sysmgr.List_TracksForPlaylist(playlistname, username);
+                    PlayList.DataSource = datainfo; //if nothing is coming back it will show the template
+                    PlayList.DataBind();
+                }, "Playlist Tracks", "See current tracks on playlist below"
+                );
+            }
  
         }
 
