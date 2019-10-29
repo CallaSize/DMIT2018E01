@@ -149,10 +149,40 @@ namespace WebApp.SamplePages
  
         }
 
+        //this is different than a straight click. Notice the CommandEventArgs parameter.
         protected void TracksSelectionList_ItemCommand(object sender, 
             ListViewCommandEventArgs e)
         {
-            //code to go here
+            //do we have the playlist name
+            if (string.IsNullOrEmpty(PlaylistName.Text))
+            {
+                //if we don't...
+                MessageUserControl.ShowInfo("Required Data","You need a play list name to add a track.");
+            }
+            else
+            {
+                //collect the required data for the event
+                string playlistname = PlaylistName.Text;
+                //the user name will come from the form security, so instead we will just use a hardcoded string until we add the security
+                string username = "HansenB";
+                //obtain the track id from the ListView. 
+                //the track ID will be in the CommandArg property of the ListViewCommandEventArgs e instance
+                int trackid = int.Parse(e.CommandArgument.ToString()); //<-- what comes back is actually an object, so we need to type cast this thing.
+                                                                       //the Commandarg in e is returned as an object. Cast it to a string, then you can Parse the string.
+
+                //using the obtained data, issue your  call to the BLL method, this work will be done within a TryRun
+                MessageUserControl.TryRun(() => 
+                {
+                    PlaylistTracksController sysmgr = new PlaylistTracksController();
+                    //there is ONLY one call to add the data to the database.
+                    sysmgr.Add_TrackToPLaylist(playlistname, username, trackid);
+                    //refresh the playlist, and we already have the method to do that, so we are borrowing from our playlist fetch
+                    //the REFRESH of the playlist is a READ.
+                    List<UserPlaylistTrack> datainfo = sysmgr.List_TracksForPlaylist(playlistname, username);
+                    PlayList.DataSource = datainfo;
+                    PlayList.DataBind();
+                },"Adding a Track","Success! Track added to playlist!");
+            }
             
         }
 
