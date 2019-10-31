@@ -8,6 +8,7 @@ using System.Web.UI.WebControls;
 #region Additional Namespaces
 using ChinookSystem.BLL;
 using ChinookSystem.Data.POCOs;
+using DMIT2018Common.UserControls;
 //using WebApp.Security;
 #endregion
 
@@ -126,19 +127,135 @@ namespace WebApp.SamplePages
 
         protected void MoveDown_Click(object sender, EventArgs e)
         {
-            //code to go here
- 
+            List<string> reasons = new List<string>();
+            //is there a playlist?
+            //no? then msg
+            if (PlayList.Rows.Count == 0)
+            {
+                reasons.Add("There is no playlist present.");
+            }
+
+                //yes then is there a playlistname?
+                //no  then msg
+                if (string.IsNullOrEmpty(PlaylistName.Text))
+                {
+                    reasons.Add("You must have a playlist name");
+                }
+                int trackid = 0;
+                int tracknumber = 0;
+                int rowsSelected = 0;
+                CheckBox playlistselection = null;  //?CheckBox?
+
+            //yes then traverse playlist to collect selected row(s)
+            //if > 1 selected? 
+            for (int rowindex = 0; rowindex < PlayList.Rows.Count; rowindex++)
+            {
+                //access the control on the indexed GRidView row
+                //set the checkbox pointer to this checkbox control
+                playlistselection = PlayList.Rows[rowindex].FindControl("Selected") as CheckBox;
+                if (playlistselection.Checked)
+                {
+                    //increase selected number of rows
+                    rowsSelected++;
+                    //gather the data neeeded for the BLL call
+                    trackid = int.Parse((PlayList.Rows[rowindex].FindControl("TrackID") as Label ).Text);
+                    tracknumber = int.Parse((PlayList.Rows[rowindex].FindControl("TrackNumber") as Label).Text);
+
+                }
+            }
+            if (rowsSelected != 1)
+            {
+                reasons.Add("Select only 1 track to move.");
+            }
+            if (tracknumber ==PlayList.Rows.Count)
+            {
+                reasons.Add("Last track cannot be moved down.");
+            }
+
+            // bad msg
+            //check if last track.
+            // bad msg
+            // validation good no: display all errors, yes:then move track
+            if (reasons.Count ==0)
+            {
+                MoveTrack(trackid, tracknumber, "down");
+            }
+            else
+            {
+                MessageUserControl.TryRun(() =>
+                {
+                    throw new BusinessRuleException("Track Move Errors:", reasons);
+                });
+            }
+
+
         }
 
         protected void MoveUp_Click(object sender, EventArgs e)
         {
-            //code to go here
- 
+            List<string> reasons = new List<string>();
+
+            if (PlayList.Rows.Count == 0)
+            {
+                reasons.Add("There is no playlist present.");
+            }
+
+            if (string.IsNullOrEmpty(PlaylistName.Text))
+            {
+                reasons.Add("You must have a playlist name");
+            }
+            int trackid = 0;
+            int tracknumber = 0;
+            int rowsSelected = 0;
+            CheckBox playlistselection = null;  //?CheckBox?
+
+            for (int rowindex = 0; rowindex < PlayList.Rows.Count; rowindex++)
+            {
+                //access the control on the indexed GRidView row
+                //set the checkbox pointer to this checkbox control
+                playlistselection = PlayList.Rows[rowindex].FindControl("Selected") as CheckBox;
+                if (playlistselection.Checked)
+                {
+                    //increase selected number of rows
+                    rowsSelected++;
+                    //gather the data neeeded for the BLL call
+                    trackid = int.Parse((PlayList.Rows[rowindex].FindControl("TrackID") as Label).Text);
+                    tracknumber = int.Parse((PlayList.Rows[rowindex].FindControl("TrackNumber") as Label).Text);
+
+                }
+            }
+            if (rowsSelected != 1)
+            {
+                reasons.Add("Select only 1 track to move.");
+            }
+            if (tracknumber == 1)
+            {
+                reasons.Add("Last track cannot be moved up.");
+            }
+            if (reasons.Count == 0)
+            {
+                MoveTrack(trackid, tracknumber, "upo);
+            }
+            else
+            {
+                MessageUserControl.TryRun(() =>
+                {
+                    throw new BusinessRuleException("Track Move Errors:", reasons);
+                });
+            }
+
         }
 
         protected void MoveTrack(int trackid, int tracknumber, string direction)
         {
             //call BLL to move track
+            MessageUserControl.TryRun(()=> {
+                PlaylistTracksController sysmgr = new PlaylistTracksController();
+                sysmgr.MoveTrack("HansenB", PlaylistName.Text, trackid, tracknumber, direction);
+                List<UserPlaylistTrack> datainfo = sysmgr.List_TracksForPlaylist(PlaylistName.Text, "HansenB");
+                PlayList.DataSource = datainfo; //if nothing is coming back it will show the template
+                PlayList.DataBind();
+            },"Success","Track has been moved");
  
         }
 
