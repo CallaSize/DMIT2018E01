@@ -234,7 +234,7 @@ namespace WebApp.SamplePages
             }
             if (reasons.Count == 0)
             {
-                MoveTrack(trackid, tracknumber, "upo);
+                MoveTrack(trackid, tracknumber, "up");
             }
             else
             {

@@ -137,7 +137,90 @@ namespace ChinookSystem.BLL
         {
             using (var context = new ChinookContext())
             {
-                //code to go here 
+                //get playlist id
+                var exists = (from x in context.Playlists
+                              where x.UserName.Equals(username, StringComparison.OrdinalIgnoreCase)
+                              && x.Name.Equals(playlistname, StringComparison.OrdinalIgnoreCase)
+                              select x).FirstOrDefault();
+                //validation that is going to be coded as if then elses - one error at a time -
+                if (exists == null)
+                {
+                    throw new Exception("Playlist does not exist");
+                }
+                else
+                {
+                    PlaylistTrack moveTrack = (from x in exists.PlaylistTracks
+                                               where x.TrackId == trackid
+                                               select x).FirstOrDefault();
+                    if (moveTrack == null)
+                    {
+                        throw new Exception("Playlist track does not exist");
+                    }
+                    else
+                    {
+                        PlaylistTrack otherTrack = null;
+                        //up or down
+                        if (direction.Equals("up"))
+                        {
+                            //up
+                            if (tracknumber==1)
+                            {
+                                throw new Exception("Track 1 cannot be moved up");
+                            }
+                            else
+                            {
+                                //find the other track
+                                otherTrack = (from x in exists.PlaylistTracks
+                                                where x.TrackNumber == moveTrack.TrackNumber - 1
+                                                select x).FirstOrDefault();
+                                if (otherTrack ==null)
+                                {
+                                    //someone has really been messing with you!
+                                    throw new Exception("Playlist is corrupt. Fetch playlist again");
+                                }
+                                else
+                                {
+                                    moveTrack.TrackNumber -= 1;
+                                    otherTrack.TrackNumber += 1;
+                                    //this has nothing to do with the database!!!!! it's all about the display.
+                                }
+                            }
+
+                        }
+                        else
+                        {
+                            //down
+                            if (tracknumber == exists.PlaylistTracks.Count)
+                            {
+                                throw new Exception("Last Track cannot be moved down");
+                            }
+                            else
+                            {
+                                //find the other track
+                                otherTrack = (from x in exists.PlaylistTracks
+                                              where x.TrackNumber == moveTrack.TrackNumber + 1
+                                              select x).FirstOrDefault();
+                                if (otherTrack == null)
+                                {
+                                    //someone has really been messing with you!
+                                    throw new Exception("Playlist is corrupt. Fetch playlist again");
+                                }
+                                else
+                                {
+                                    moveTrack.TrackNumber += 1;
+                                    otherTrack.TrackNumber -= 1;
+                                    //this has nothing to do with the database!!!!! it's all about the display.
+                                }
+                            }
+
+                        }//eof up or down
+                        //staging
+                        context.Entry(moveTrack).Property(y => y.TrackNumber).IsModified = true;
+                        context.Entry(otherTrack).Property(y => y.TrackNumber).IsModified = true;
+                        //commit
+                        context.SaveChanges();
+                    }
+                }
 
             }
         }//eom
