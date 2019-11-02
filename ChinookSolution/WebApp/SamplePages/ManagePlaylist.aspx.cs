@@ -262,8 +262,60 @@ namespace WebApp.SamplePages
 
         protected void DeleteTrack_Click(object sender, EventArgs e)
         {
-            //code to go here
- 
+            //do we have the playlist name
+            if (string.IsNullOrEmpty(PlaylistName.Text))
+            {
+                //if we don't...
+                MessageUserControl.ShowInfo("Required Data", "You need a play list name to add a track.");
+            }
+            else
+            {
+                //have a playlist?
+                if (PlayList.Rows.Count == 0)
+                {
+                    MessageUserControl.ShowInfo("Required Data", "No play list is available. Retrieve your playlist");
+                }
+                else
+                {
+                    //traverse the grid view and collect the list of tracks to remove
+                    List<int> trackstodelete = new List<int>();
+                    int rowselected = 0;
+                    CheckBox playlistselection = null;
+                    for (int rowindex = 0; rowindex < PlayList.Rows.Count; rowindex++)
+                    {
+                        //access the checkbox control on teh indexed Gridviewrow
+                        //set the checkbox pointer to this checkbox control
+                        playlistselection = PlayList.Rows[rowindex].FindControl("Selected") as CheckBox;
+                        if (playlistselection.Checked)
+                        {
+                            //increase selected nnumber of rows
+                            rowselected++;
+                            //gather the data needed for the BLL call
+                            trackstodelete.Add(int.Parse((PlayList.Rows[rowindex].FindControl("TrackID") as Label).Text));
+                        }
+                    }
+                    if (rowselected==0)
+                    {
+                        MessageUserControl.ShowInfo("Required Data","You must select as least one track to remove");
+                    }
+                    else
+                    {
+                        //send list of tracks to be removed by BLL
+                        MessageUserControl.TryRun(() =>
+                        {
+                            PlaylistTracksController sysmgr = new PlaylistTracksController();
+                            //there is ONLY one call to add the data to the database.
+                            sysmgr.DeleteTracks("HansenB",PlaylistName.Text, trackstodelete);
+                            //the REFRESH of the playlist is a READ.
+                            List<UserPlaylistTrack> datainfo = sysmgr.List_TracksForPlaylist(PlaylistName.Text, "HansenB");
+                            PlayList.DataSource = datainfo;
+                            PlayList.DataBind();
+                        }, "Deleting a Track", "Success! Track has been removed from playlist!");
+                    }
+                }
+            }
+
+
         }
 
         //this is different than a straight click. Notice the CommandEventArgs parameter.
