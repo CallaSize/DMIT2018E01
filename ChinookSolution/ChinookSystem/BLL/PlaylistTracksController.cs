@@ -230,12 +230,47 @@ namespace ChinookSystem.BLL
         {
             using (var context = new ChinookContext())
             {
-                //
-                //if (string.IsNullOrEmpty())
-                //{
+                //playlist exists?
+                var exists = (from x in context.Playlists where x.UserName.Equals(username, StringComparison.OrdinalIgnoreCase) && x.Name.Equals(playlistname, StringComparison.OrdinalIgnoreCase) select x).FirstOrDefault();
+                if (exists == null)
+                {
+                    //no: message
+                    throw new Exception("Playlist has been removed from the system");
+                }
+                else
+                {
 
-                //}
+                    //yes: create a list of playlisttracks that are to be kept.
+                    List<PlaylistTrack> trackskept = exists.PlaylistTracks
+                                    .Where(tr => !trackstodelete.Any(tod => tr.TrackId == tod))
+                                    .Select(tr => tr)
+                                    .ToList();
+                    //       stage the removal of tracks
+                    PlaylistTrack item = null;
+                    foreach (var dtrackid in trackstodelete)
+                    {
+                        item = exists.PlaylistTracks
+                            .Where(tr => tr.TrackId == dtrackid).FirstOrDefault();
+                        if (item != null)
+                        {
+                            //stage it
+                            exists.PlaylistTracks.Remove(item);
 
+                        }
+                    }
+                    //       renumbering all of kept tracks and stage update. 
+                    int number = 1;
+                    trackskept.Sort((x, y) => x.TrackNumber.CompareTo(y.TrackNumber));
+                    foreach (var tkept in trackskept)
+                    {
+                        tkept.TrackNumber = number;
+                        context.Entry(tkept).Property(y => y.TrackNumber).IsModified = true; //field update, not the entity update
+                        number++;
+
+                    }
+                    //       commit
+                    context.SaveChanges();
+                }
 
             }
         }//eom
