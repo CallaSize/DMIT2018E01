@@ -8,7 +8,8 @@ using System.Threading.Tasks;
 using ChinookSystem.DAL;
 using ChinookSystem.Data.Entities;
 using System.ComponentModel;
-using DMIT2018Common.UserControls;
+using ChinookSystem.BLL;
+//using DMIT2018Common.UserControls;
 using ChinookSystem.Data.POCOs;
 using ChinookSystem.Data.DTOs;
 #endregion

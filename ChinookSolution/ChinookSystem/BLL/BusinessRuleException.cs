@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DMIT2018Common.UserControls
+namespace ChinookSystem.BLL
 {
     /// <summary>
     /// Summary description for BusinessRuleException

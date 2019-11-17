@@ -10,7 +10,8 @@ using ChinookSystem.Data.DTOs;
 using ChinookSystem.Data.POCOs;
 using ChinookSystem.DAL;
 using System.ComponentModel;
-using DMIT2018Common.UserControls;
+using ChinookSystem.BLL;
+//using DMIT2018Common.UserControls;
 #endregion
 
 namespace ChinookSystem.BLL
