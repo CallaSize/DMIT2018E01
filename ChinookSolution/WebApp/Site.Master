@@ -86,6 +86,7 @@
                             <asp:MenuItem Text="Home" NavigateUrl="~/Default.aspx"></asp:MenuItem>
                             <asp:MenuItem Text="About" NavigateUrl="~/About.aspx"></asp:MenuItem>
                             <asp:MenuItem Text="Contact" NavigateUrl="~/Contact.aspx"></asp:MenuItem>
+                            <asp:MenuItem Text="Security" NavigateUrl="~/Security/SecurityAdmin.aspx"></asp:MenuItem>
                             <asp:MenuItem Text="Samples" Value="Samples" ToolTip="Select one">
                                 <asp:MenuItem Text="Review CRUD" NavigateUrl="~/SamplePages/FilterSearchCRUD.aspx"></asp:MenuItem>
                                 <asp:MenuItem Text="List View CRUD using ODS" NavigateUrl="~/SamplePages/ListViewCRUDODS.aspx"></asp:MenuItem>

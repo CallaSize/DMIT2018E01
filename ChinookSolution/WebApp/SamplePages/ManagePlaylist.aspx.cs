@@ -7,8 +7,10 @@ using System.Web.UI.WebControls;
 
 #region Additional Namespaces
 using ChinookSystem.BLL;
+using ChinookSystem.Data.Entities;
 using ChinookSystem.Data.POCOs;
 using DMIT2018Common.UserControls;
+using WebApp.Security;
 //using WebApp.Security;
 #endregion
 
@@ -19,6 +21,47 @@ namespace WebApp.SamplePages
         protected void Page_Load(object sender, EventArgs e)
         {
             TracksSelectionList.DataSource = null;
+           if (Request.IsAuthenticated)
+            {
+                if (User.IsInRole("Customers") || User.IsInRole("Customer Service"))
+                {
+                    //to get the customernumber im going to have to go to my security controller, call the method, what this needs as input is my username
+                    var username = User.Identity.Name;
+                    SecurityController securitymgr = new SecurityController();
+                    //first off, the ids are nullable ints, you cannot just pull it into an int, you have to pull it into a nullable int and then owkr on it from there
+                    int? customerid = securitymgr.GetCurrentUserCustomerId(username);
+                    //my customer controller needs a real int not a nullable int, so lets check if we got a number coming back, what if it is the employee that is trying to look things up
+                    if (customerid.HasValue)
+                    {
+                        //if the customer number does exist then you haVE TO go and get the customer name, but we need error handling
+                        MessageUserControl.TryRun(() => 
+                        {
+                            //do a standard lookup
+                            CustomerController sysmgr = new CustomerController();
+                            Customer info = sysmgr.Customer_Get(customerid.Value);
+                            CustomerName.Text = info.FullName;
+
+                        });
+                    }
+                    else
+                    {
+                        MessageUserControl.ShowInfo("unregistered user", "this user is not a registered customer");
+                        CustomerName.Text = "Unregistered User";
+                    }
+
+                }
+                else
+                {
+                    //redirect to a page that states no authorization fot the request action
+                    Response.Redirect("~/Security/AccessDenied.aspx");
+                }
+            }
+            else
+            {
+                //redirect to login page
+                Response.Redirect("~/Account/Login.aspx");
+            }
+
         }
 
         protected void CheckForException(object sender, ObjectDataSourceStatusEventArgs e)
@@ -111,7 +154,8 @@ namespace WebApp.SamplePages
                 //call BLL
                 string playlistname = PlaylistName.Text;
                 //until we do security, we will use a hard coded username
-                string username = "HansenB";
+                //string username = "HansenB"; once, security is implemented, you can obtain the user name from user.identity class property .name
+                string username = User.Identity.Name;
                 //do a standard query lookup to your controller, use MessageUserControl for error handling
                 MessageUserControl.TryRun(() =>
                 {
@@ -251,8 +295,8 @@ namespace WebApp.SamplePages
             //call BLL to move track
             MessageUserControl.TryRun(()=> {
                 PlaylistTracksController sysmgr = new PlaylistTracksController();
-                sysmgr.MoveTrack("HansenB", PlaylistName.Text, trackid, tracknumber, direction);
-                List<UserPlaylistTrack> datainfo = sysmgr.List_TracksForPlaylist(PlaylistName.Text, "HansenB");
+                sysmgr.MoveTrack(User.Identity.Name, PlaylistName.Text, trackid, tracknumber, direction);
+                List<UserPlaylistTrack> datainfo = sysmgr.List_TracksForPlaylist(PlaylistName.Text, User.Identity.Name);
                 PlayList.DataSource = datainfo; //if nothing is coming back it will show the template
                 PlayList.DataBind();
             },"Success","Track has been moved");
@@ -305,9 +349,9 @@ namespace WebApp.SamplePages
                         {
                             PlaylistTracksController sysmgr = new PlaylistTracksController();
                             //there is ONLY one call to add the data to the database.
-                            sysmgr.DeleteTracks("HansenB",PlaylistName.Text, trackstodelete);
+                            sysmgr.DeleteTracks(User.Identity.Name,PlaylistName.Text, trackstodelete);
                             //the REFRESH of the playlist is a READ.
-                            List<UserPlaylistTrack> datainfo = sysmgr.List_TracksForPlaylist(PlaylistName.Text, "HansenB");
+                            List<UserPlaylistTrack> datainfo = sysmgr.List_TracksForPlaylist(PlaylistName.Text, User.Identity.Name);
                             PlayList.DataSource = datainfo;
                             PlayList.DataBind();
                         }, "Deleting a Track", "Success! Track has been removed from playlist!");
@@ -333,7 +377,8 @@ namespace WebApp.SamplePages
                 //collect the required data for the event
                 string playlistname = PlaylistName.Text;
                 //the user name will come from the form security, so instead we will just use a hardcoded string until we add the security
-                string username = "HansenB";
+                //string username = "HansenB";
+                string username = User.Identity.Name;
                 //obtain the track id from the ListView. 
                 //the track ID will be in the CommandArg property of the ListViewCommandEventArgs e instance
                 int trackid = int.Parse(e.CommandArgument.ToString()); //<-- what comes back is actually an object, so we need to type cast this thing.

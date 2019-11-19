@@ -7,6 +7,8 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
 <div>
     <h1>Manage Playlists (UI/UX TRX Sample)</h1>
+    <asp:Label ID="CustomerName" runat="server" Text=""></asp:Label>
+
 </div>
     <%--Add MessageUserControl--%>
     <uc1:MessageUserControl runat="server" id="MessageUserControl" />
